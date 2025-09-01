@@ -188,8 +188,6 @@
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
-            gap: 8px;
-            flex-wrap: wrap;
         }
         
         .search-filters {
@@ -213,7 +211,6 @@
             justify-content: center;
             margin-top: 30px;
             gap: 10px;
-            flex-wrap: wrap;
         }
         
         .pagination button {
@@ -255,14 +252,13 @@
         }
         
         @media (max-width: 768px) {
-            header h1 { font-size: 2rem; }
             .customer-list {
                 grid-template-columns: 1fr;
             }
+            
             .search-filters {
                 flex-direction: column;
             }
-            .btn { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -271,11 +267,11 @@
 
     <script type="text/babel">
         // Main App Component
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useCallback } = React;
 
         // Notification Component
         const Notification = ({ message, type, show, onClose }) => {
-            React.useEffect(() => {
+            useEffect(() => {
                 if (show) {
                     const timer = setTimeout(() => {
                         onClose();
@@ -285,8 +281,8 @@
             }, [show, onClose]);
 
             return (
-                <div className={\`notification \${type} \${show ? 'show' : ''}\`}>
-                    <i className={\`fas \${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}\`}></i>
+                <div className={`notification ${type} ${show ? 'show' : ''}`}>
+                    <i className={`fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}`}></i>
                     {message}
                 </div>
             );
@@ -354,6 +350,7 @@
                 const { name, value } = e.target;
                 setFormData(prev => ({ ...prev, [name]: value }));
                 
+                // Clear error when user starts typing
                 if (errors[name]) {
                     setErrors(prev => ({ ...prev, [name]: '' }));
                 }
@@ -363,20 +360,113 @@
                 <div className="card">
                     <h2>{customer ? 'Edit Customer' : 'Create New Customer'}</h2>
                     <form onSubmit={handleSubmit}>
-                        {['first_name','last_name','email','phone','address_line1','address_line2','city','state','pincode'].map((field, idx) => (
-                            <div className="form-group" key={field}>
-                                <label>{{
-                                    first_name:'First Name *',last_name:'Last Name *',email:'Email',phone:'Phone *',address_line1:'Address Line 1 *',address_line2:'Address Line 2',city:'City *',state:'State *',pincode:'Pincode *'
-                                }[field]}</label>
-                                <input type={field==='email'?'email': field==='phone'?'tel':'text'}
-                                       name={field}
-                                       value={formData[field]}
-                                       onChange={handleChange}
-                                       className={errors[field] ? 'error' : ''} />
-                                {errors[field] && <span className="error-text">{errors[field]}</span>}
-                            </div>
-                        ))}
-                        <div className="form-actions" style={{display:'flex', gap:'10px', flexWrap:'wrap'}}>
+                        <div className="form-group">
+                            <label>First Name *</label>
+                            <input
+                                type="text"
+                                name="first_name"
+                                value={formData.first_name}
+                                onChange={handleChange}
+                                className={errors.first_name ? 'error' : ''}
+                            />
+                            {errors.first_name && <span className="error-text">{errors.first_name}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Last Name *</label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                value={formData.last_name}
+                                onChange={handleChange}
+                                className={errors.last_name ? 'error' : ''}
+                            />
+                            {errors.last_name && <span className="error-text">{errors.last_name}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className={errors.email ? 'error' : ''}
+                            />
+                            {errors.email && <span className="error-text">{errors.email}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Phone *</label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                className={errors.phone ? 'error' : ''}
+                            />
+                            {errors.phone && <span className="error-text">{errors.phone}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Address Line 1 *</label>
+                            <input
+                                type="text"
+                                name="address_line1"
+                                value={formData.address_line1}
+                                onChange={handleChange}
+                                className={errors.address_line1 ? 'error' : ''}
+                            />
+                            {errors.address_line1 && <span className="error-text">{errors.address_line1}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Address Line 2</label>
+                            <input
+                                type="text"
+                                name="address_line2"
+                                value={formData.address_line2}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>City *</label>
+                            <input
+                                type="text"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleChange}
+                                className={errors.city ? 'error' : ''}
+                            />
+                            {errors.city && <span className="error-text">{errors.city}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>State *</label>
+                            <input
+                                type="text"
+                                name="state"
+                                value={formData.state}
+                                onChange={handleChange}
+                                className={errors.state ? 'error' : ''}
+                            />
+                            {errors.state && <span className="error-text">{errors.state}</span>}
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Pincode *</label>
+                            <input
+                                type="text"
+                                name="pincode"
+                                value={formData.pincode}
+                                onChange={handleChange}
+                                className={errors.pincode ? 'error' : ''}
+                            />
+                            {errors.pincode && <span className="error-text">{errors.pincode}</span>}
+                        </div>
+                        
+                        <div className="form-actions">
                             <button type="submit" className="btn">
                                 {customer ? 'Update Customer' : 'Create Customer'}
                             </button>
@@ -463,10 +553,34 @@
                 <div className="card">
                     <h2>Search & Filters</h2>
                     <div className="search-filters">
-                        <input type="text" name="search" placeholder="Search by name, email, or phone" value={filters.search} onChange={handleChange} />
-                        <input type="text" name="city" placeholder="Filter by city" value={filters.city} onChange={handleChange} />
-                        <input type="text" name="state" placeholder="Filter by state" value={filters.state} onChange={handleChange} />
-                        <input type="text" name="pincode" placeholder="Filter by pincode" value={filters.pincode} onChange={handleChange} />
+                        <input
+                            type="text"
+                            name="search"
+                            placeholder="Search by name, email, or phone"
+                            value={filters.search}
+                            onChange={handleChange}
+                        />
+                        <input
+                            type="text"
+                            name="city"
+                            placeholder="Filter by city"
+                            value={filters.city}
+                            onChange={handleChange}
+                        />
+                        <input
+                            type="text"
+                            name="state"
+                            placeholder="Filter by state"
+                            value={filters.state}
+                            onChange={handleChange}
+                        />
+                        <input
+                            type="text"
+                            name="pincode"
+                            placeholder="Filter by pincode"
+                            value={filters.pincode}
+                            onChange={handleChange}
+                        />
                     </div>
                     <button className="btn" onClick={onClearFilters}>
                         <i className="fas fa-times"></i> Clear Filters
@@ -480,7 +594,11 @@
             const pages = [];
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(
-                    <button key={i} className={currentPage === i ? 'active' : ''} onClick={() => onPageChange(i)}>
+                    <button
+                        key={i}
+                        className={currentPage === i ? 'active' : ''}
+                        onClick={() => onPageChange(i)}
+                    >
                         {i}
                     </button>
                 );
@@ -490,11 +608,17 @@
 
             return (
                 <div className="pagination">
-                    <button disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+                    <button
+                        disabled={currentPage === 1}
+                        onClick={() => onPageChange(currentPage - 1)}
+                    >
                         <i className="fas fa-chevron-left"></i> Previous
                     </button>
                     {pages}
-                    <button disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
+                    <button
+                        disabled={currentPage === totalPages}
+                        onClick={() => onPageChange(currentPage + 1)}
+                    >
                         Next <i className="fas fa-chevron-right"></i>
                     </button>
                 </div>
@@ -505,19 +629,32 @@
         const App = () => {
             const [customers, setCustomers] = useState([]);
             const [filteredCustomers, setFilteredCustomers] = useState([]);
-            const [currentView, setCurrentView] = useState('list');
+            const [currentView, setCurrentView] = useState('list'); // 'list', 'create', 'edit', 'view'
             const [selectedCustomer, setSelectedCustomer] = useState(null);
             const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
-            const [filters, setFilters] = useState({ search: '', city: '', state: '', pincode: '' });
-            const [pagination, setPagination] = useState({ currentPage: 1, pageSize: 6, totalPages: 1 });
+            const [filters, setFilters] = useState({
+                search: '',
+                city: '',
+                state: '',
+                pincode: ''
+            });
+            const [pagination, setPagination] = useState({
+                currentPage: 1,
+                pageSize: 6,
+                totalPages: 1
+            });
 
+            // Load customers from localStorage on initial render
             useEffect(() => {
                 const savedCustomers = JSON.parse(localStorage.getItem('customers')) || [];
                 setCustomers(savedCustomers);
             }, []);
 
+            // Apply filters and pagination
             useEffect(() => {
                 let result = customers;
+                
+                // Apply search filter
                 if (filters.search) {
                     const searchTerm = filters.search.toLowerCase();
                     result = result.filter(c => 
@@ -527,36 +664,73 @@
                         c.phone.includes(filters.search)
                     );
                 }
-                if (filters.city) result = result.filter(c => c.city.toLowerCase().includes(filters.city.toLowerCase()));
-                if (filters.state) result = result.filter(c => c.state.toLowerCase().includes(filters.state.toLowerCase()));
-                if (filters.pincode) result = result.filter(c => c.pincode.includes(filters.pincode));
-
+                
+                // Apply city filter
+                if (filters.city) {
+                    result = result.filter(c => 
+                        c.city.toLowerCase().includes(filters.city.toLowerCase())
+                    );
+                }
+                
+                // Apply state filter
+                if (filters.state) {
+                    result = result.filter(c => 
+                        c.state.toLowerCase().includes(filters.state.toLowerCase())
+                    );
+                }
+                
+                // Apply pincode filter
+                if (filters.pincode) {
+                    result = result.filter(c => 
+                        c.pincode.includes(filters.pincode)
+                    );
+                }
+                
+                // Calculate pagination
                 const totalPages = Math.ceil(result.length / pagination.pageSize);
                 setPagination(prev => ({ ...prev, totalPages }));
                 
+                // Get current page items
                 const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
                 const paginatedResult = result.slice(startIndex, startIndex + pagination.pageSize);
+                
                 setFilteredCustomers(paginatedResult);
             }, [customers, filters, pagination.currentPage, pagination.pageSize]);
 
-            const showNotification = (message, type = 'success') => setNotification({ show: true, message, type });
-            const hideNotification = () => setNotification(prev => ({ ...prev, show: false }));
+            const showNotification = (message, type = 'success') => {
+                setNotification({ show: true, message, type });
+            };
+
+            const hideNotification = () => {
+                setNotification({ ...notification, show: false });
+            };
 
             const handleCreateCustomer = (customerData) => {
-                const newCustomer = { id: Date.now(), ...customerData, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+                const newCustomer = {
+                    id: Date.now(),
+                    ...customerData,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
                 const updatedCustomers = [...customers, newCustomer];
                 setCustomers(updatedCustomers);
                 localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+                
                 setCurrentView('list');
                 showNotification('Customer created successfully!');
             };
 
             const handleUpdateCustomer = (customerData) => {
                 const updatedCustomers = customers.map(c => 
-                    c.id === selectedCustomer.id ? { ...c, ...customerData, updated_at: new Date().toISOString() } : c
+                    c.id === selectedCustomer.id 
+                        ? { ...c, ...customerData, updated_at: new Date().toISOString() }
+                        : c
                 );
+                
                 setCustomers(updatedCustomers);
                 localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+                
                 setCurrentView('list');
                 setSelectedCustomer(null);
                 showNotification('Customer updated successfully!');
@@ -567,27 +741,84 @@
                     const updatedCustomers = customers.filter(c => c.id !== id);
                     setCustomers(updatedCustomers);
                     localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+                    
                     showNotification('Customer deleted successfully!');
                 }
             };
 
-            const handleEditCustomer = (customer) => { setSelectedCustomer(customer); setCurrentView('edit'); };
-            const handleViewCustomer = (customer) => { setSelectedCustomer(customer); setCurrentView('view'); };
+            const handleEditCustomer = (customer) => {
+                setSelectedCustomer(customer);
+                setCurrentView('edit');
+            };
 
-            const handleFilterChange = (name, value) => { setFilters(prev => ({ ...prev, [name]: value })); setPagination(prev => ({ ...prev, currentPage: 1 })); };
-            const handleClearFilters = () => setFilters({ search: '', city: '', state: '', pincode: '' });
-            const handlePageChange = (page) => setPagination(prev => ({ ...prev, currentPage: page }));
+            const handleViewCustomer = (customer) => {
+                setSelectedCustomer(customer);
+                setCurrentView('view');
+            };
+
+            const handleFilterChange = (name, value) => {
+                setFilters(prev => ({ ...prev, [name]: value }));
+                setPagination(prev => ({ ...prev, currentPage: 1 }));
+            };
+
+            const handleClearFilters = () => {
+                setFilters({
+                    search: '',
+                    city: '',
+                    state: '',
+                    pincode: ''
+                });
+            };
+
+            const handlePageChange = (page) => {
+                setPagination(prev => ({ ...prev, currentPage: page }));
+            };
 
             const renderView = () => {
                 switch (currentView) {
-                    case 'create': return <CustomerForm onSubmit={handleCreateCustomer} onCancel={() => setCurrentView('list')} />;
-                    case 'edit': return <CustomerForm customer={selectedCustomer} onSubmit={handleUpdateCustomer} onCancel={() => setCurrentView('list')} />;
-                    case 'view': return <CustomerDetail customer={selectedCustomer} onBack={() => setCurrentView('list')} />;
-                    default: return (<>
-                        <SearchFilters filters={filters} onFilterChange={handleFilterChange} onClearFilters={handleClearFilters} />
-                        <CustomerList customers={filteredCustomers} onEdit={handleEditCustomer} onDelete={handleDeleteCustomer} onView={handleViewCustomer} />
-                        <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={handlePageChange} />
-                    </>);
+                    case 'create':
+                        return (
+                            <CustomerForm
+                                onSubmit={handleCreateCustomer}
+                                onCancel={() => setCurrentView('list')}
+                            />
+                        );
+                    case 'edit':
+                        return (
+                            <CustomerForm
+                                customer={selectedCustomer}
+                                onSubmit={handleUpdateCustomer}
+                                onCancel={() => setCurrentView('list')}
+                            />
+                        );
+                    case 'view':
+                        return (
+                            <CustomerDetail
+                                customer={selectedCustomer}
+                                onBack={() => setCurrentView('list')}
+                            />
+                        );
+                    default:
+                        return (
+                            <>
+                                <SearchFilters
+                                    filters={filters}
+                                    onFilterChange={handleFilterChange}
+                                    onClearFilters={handleClearFilters}
+                                />
+                                <CustomerList
+                                    customers={filteredCustomers}
+                                    onEdit={handleEditCustomer}
+                                    onDelete={handleDeleteCustomer}
+                                    onView={handleViewCustomer}
+                                />
+                                <Pagination
+                                    currentPage={pagination.currentPage}
+                                    totalPages={pagination.totalPages}
+                                    onPageChange={handlePageChange}
+                                />
+                            </>
+                        );
                 }
             };
 
@@ -599,14 +830,23 @@
                     </header>
                     
                     {currentView === 'list' && (
-                        <button className="btn" onClick={() => setCurrentView('create')} style={{ marginBottom: '20px' }}>
+                        <button 
+                            className="btn" 
+                            onClick={() => setCurrentView('create')}
+                            style={{ marginBottom: '20px' }}
+                        >
                             <i className="fas fa-plus"></i> Add New Customer
                         </button>
                     )}
                     
                     {renderView()}
                     
-                    <Notification message={notification.message} type={notification.type} show={notification.show} onClose={hideNotification} />
+                    <Notification
+                        message={notification.message}
+                        type={notification.type}
+                        show={notification.show}
+                        onClose={hideNotification}
+                    />
                 </div>
             );
         };
